@@ -169,7 +169,8 @@ let save=defaults();
 try{const raw=localStorage.getItem(KEY);if(raw){save=Object.assign(defaults(),JSON.parse(raw));}}catch(e){}
 if(!save.soundV2){save.sound=true;save.soundV2=true;}
 if(!save.built)save.built={};if(!Array.isArray(save.kept))save.kept=[];if(!Array.isArray(save.stones))save.stones=[];if(!Array.isArray(save.pods))save.pods=[];
-function persist(){try{localStorage.setItem(KEY,JSON.stringify(save));}catch(e){}}
+let resetting=false;
+function persist(){if(resetting)return;try{localStorage.setItem(KEY,JSON.stringify(save));}catch(e){}}
 const TONIGHT=nightKey();
 const firstVisitTonight=!save.nights.includes(TONIGHT);
 if(firstVisitTonight){save.nights.push(TONIGHT);if(save.nights.length>400)save.nights.shift();}
@@ -1027,7 +1028,7 @@ function openPanel(kind){
     $('mDim').addEventListener('click',()=>{save.dim=(save.dim+1)%DIMS.length;persist();applyDim();openPanel('more');});
     $('mCandle').addEventListener('click',()=>{toggleCandle();closePanel();});
     $('mTour').addEventListener('click',()=>{closePanel();tutStart();});
-    $('mReset').addEventListener('click',()=>{const b=$('mReset');if(b.dataset.arm){try{localStorage.removeItem(KEY);}catch(e){}location.reload();}else{b.dataset.arm='1';b.textContent='Tap again to really reset';}});
+    $('mReset').addEventListener('click',()=>{const b=$('mReset');if(b.dataset.arm){resetting=true;try{localStorage.removeItem(KEY);localStorage.clear();}catch(e){}b.textContent='Starting over\u2026';setTimeout(()=>location.reload(),150);}else{b.dataset.arm='1';b.textContent='Tap again to really reset';}});
   }
   $('panel').hidden=false;$('panel').scrollTop=0;
 }

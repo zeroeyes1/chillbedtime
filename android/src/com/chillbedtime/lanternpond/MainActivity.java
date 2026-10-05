@@ -33,6 +33,11 @@ public class MainActivity extends Activity {
         web.setWebChromeClient(new WebChromeClient());
         web.setWebViewClient(new WebViewClient());
         web.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        web.setHapticFeedbackEnabled(false);
+        web.setLongClickable(false);
+        web.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override public boolean onLongClick(View v) { return true; }
+        });
         web.setVerticalScrollBarEnabled(false);
         web.setHorizontalScrollBarEnabled(false);
         web.loadUrl("file:///android_asset/index.html");

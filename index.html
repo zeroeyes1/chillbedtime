@@ -31,7 +31,7 @@
 html,body{height:100%;margin:0;overflow:hidden;background:var(--water-deep);color:var(--ink);
   font-family:var(--font-ui);-webkit-tap-highlight-color:transparent;overscroll-behavior:none;touch-action:none;
   -webkit-user-select:none;user-select:none}
-#c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+#c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;-webkit-touch-callout:none}
 #shade{position:fixed;inset:0;background:#000;pointer-events:none;opacity:.22;transition:opacity 1.2s ease}
 #hint{position:fixed;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 14vh);text-align:center;pointer-events:none;
   font-family:var(--font-display);font-size:clamp(22px,5.5vw,28px);font-style:italic;color:var(--ink-dim);
@@ -46,7 +46,8 @@ html,body{height:100%;margin:0;overflow:hidden;background:var(--water-deep);colo
 #tut .dots{display:flex;gap:7px;margin-top:4px}
 #tut .dots i{width:7px;height:7px;border-radius:50%;background:var(--ink-faint)}
 #tut .dots i.on{background:var(--paper)}
-#tut .skip{pointer-events:auto;margin-top:8px;background:transparent;border:0;color:var(--ink-dim);font:14px var(--font-ui);letter-spacing:.14em;text-transform:uppercase;cursor:pointer;padding:12px 16px}
+#tut .nav{display:flex;gap:18px;margin-top:8px}
+#tut .skip{pointer-events:auto;background:transparent;border:0;color:var(--ink-dim);font:14px var(--font-ui);letter-spacing:.14em;text-transform:uppercase;cursor:pointer;padding:12px 16px}
 #tut .skip:focus-visible{outline:1px solid var(--ink-dim);outline-offset:2px}
 #toast{position:fixed;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 8vh);text-align:center;pointer-events:none;
   font-family:var(--font-display);font-size:clamp(26px,6.5vw,34px);color:var(--ink);opacity:0;transition:opacity 1.4s ease;
@@ -354,8 +355,9 @@ const tutEl=$('tut');
 function tutRender(){const st=TUT[tut.i];
   tutEl.innerHTML='<div class="card"><div class="step">'+(tut.i+1)+' of '+TUT.length+'</div><div class="text">'+st.t+'</div><div class="sub">'+st.s+'</div>'+
     '<div class="dots">'+TUT.map((_,k)=>'<i'+(k<=tut.i?' class="on"':'')+'></i>').join('')+'</div>'+
-    (tut.i<TUT.length-1?'<button class="skip" id="tutSkip">skip the tour</button>':'')+'</div>';
+    '<div class="nav">'+(tut.i>0?'<button class="skip" id="tutBack">&larr; back</button>':'')+(tut.i<TUT.length-1?'<button class="skip" id="tutSkip">skip the tour</button>':'<button class="skip" id="tutSkip">done</button>')+'</div></div>';
   const sk=$('tutSkip');if(sk)sk.addEventListener('click',tutEnd);
+  const bk=$('tutBack');if(bk)bk.addEventListener('click',tutBack);
   tutEl.classList.add('show');}
 function tutStart(){tut.on=true;tut.i=0;clearTimeout(tut.timer);$('hint').classList.remove('show');
   tutRender();tutArm();}
@@ -364,6 +366,7 @@ function tutNext(){if(!tut.on)return;clearTimeout(tut.timer);
   if(tut.i>=TUT.length-1){tutEnd();return;}
   tutEl.classList.remove('show');
   tut.timer=setTimeout(()=>{tut.i++;tutRender();tutArm();},1700);}
+function tutBack(){if(!tut.on||tut.i===0)return;clearTimeout(tut.timer);tut.i--;tutRender();tutArm();}
 function tutEnd(){tut.on=false;clearTimeout(tut.timer);tutEl.classList.remove('show');save.tut=true;persist();}
 function tutEvent(kind){if(!tut.on)return;if(TUT[tut.i].wait===kind)setTimeout(tutNext,kind==='tap'?700:1200);}
 
@@ -585,6 +588,8 @@ function endPress(e){
 }
 cv.addEventListener('pointerup',endPress);cv.addEventListener('pointercancel',endPress);
 cv.addEventListener('contextmenu',e=>e.preventDefault());
+cv.addEventListener('touchstart',e=>{e.preventDefault();},{passive:false});
+cv.addEventListener('touchmove',e=>{e.preventDefault();},{passive:false});
 
 // ---------- controls ----------
 $('bSound').addEventListener('click',()=>{setSound(!save.sound);if(save.sound)toast('Sound on','slow swells and far-off rain');});

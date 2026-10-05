@@ -37,6 +37,17 @@ html,body{height:100%;margin:0;overflow:hidden;background:var(--water-deep);colo
   font-family:var(--font-display);font-size:clamp(17px,2.4vw,22px);font-style:italic;color:var(--ink-dim);
   letter-spacing:.02em;opacity:0;transition:opacity 2s ease;padding:0 24px;text-wrap:balance}
 #hint.show{opacity:1}
+#tut{position:fixed;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 11vh);display:flex;justify-content:center;pointer-events:none;padding:0 20px;opacity:0;transition:opacity 1.6s ease}
+#tut.show{opacity:1}
+#tut .card{max-width:420px;text-align:center;display:flex;flex-direction:column;gap:8px;align-items:center}
+#tut .step{font:11px var(--font-ui);letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint)}
+#tut .text{font-family:var(--font-display);font-style:italic;font-size:clamp(19px,2.6vw,24px);color:var(--ink);line-height:1.35;text-wrap:balance;text-shadow:0 0 16px rgba(0,0,0,.8)}
+#tut .sub{font:13px var(--font-ui);color:var(--ink-dim);line-height:1.5;max-width:40ch;text-wrap:balance}
+#tut .dots{display:flex;gap:7px;margin-top:4px}
+#tut .dots i{width:5px;height:5px;border-radius:50%;background:var(--ink-faint)}
+#tut .dots i.on{background:var(--paper)}
+#tut .skip{pointer-events:auto;margin-top:8px;background:transparent;border:0;color:var(--ink-faint);font:11px var(--font-ui);letter-spacing:.14em;text-transform:uppercase;cursor:pointer;padding:8px 12px}
+#tut .skip:focus-visible{outline:1px solid var(--ink-dim);outline-offset:2px}
 #toast{position:fixed;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 8vh);text-align:center;pointer-events:none;
   font-family:var(--font-display);font-size:clamp(20px,3vw,28px);color:var(--ink);opacity:0;transition:opacity 1.4s ease;
   text-shadow:0 0 18px rgba(242,217,166,.25);padding:0 24px;text-wrap:balance}
@@ -78,6 +89,7 @@ html,body{height:100%;margin:0;overflow:hidden;background:var(--water-deep);colo
 <canvas id="c" aria-label="A night pond. Tap the water to make ripples; hold to release a lantern."></canvas>
 <div id="shade"></div>
 <div id="hint">tap the water &middot; hold to release a lantern</div>
+<div id="tut" aria-live="polite"></div>
 <div id="toast"></div>
 <div id="night"><p>the pond is asleep &middot; goodnight</p></div>
 <div id="ui" role="toolbar" aria-label="Pond controls">
@@ -105,7 +117,7 @@ html,body{height:100%;margin:0;overflow:hidden;background:var(--water-deep);colo
       <h2>How the pond works</h2>
       <p>Tap the water for a ripple and a note. Hold your finger down to release a lantern. Lanterns drift with the current and, after a few minutes afloat, leave a lotus behind. Lotuses keep growing while you are away, and they are waiting when you come back. Drag slowly to stir the water. Tap a lotus to hear it. Candle fades everything to black over ten minutes so you can fall asleep with it.</p>
     </div>
-    <button class="close" id="bClose">Back to the pond</button>
+    <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="close" id="bClose">Back to the pond</button><button class="close" id="bTut">Show me how to play again</button></div>
   </div>
 </div>
 
@@ -123,7 +135,7 @@ const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // ---------- persistence ----------
 const KEY='lantern-pond-v1';
-const defaults=()=>({lotuses:[],koi:{},nights:[],lanterns:0,sound:true,soundV2:true,dim:1,visits:0});
+const defaults=()=>({lotuses:[],koi:{},nights:[],lanterns:0,sound:true,soundV2:true,dim:1,visits:0,tut:false});
 let save=defaults();
 try{const raw=localStorage.getItem(KEY);if(raw){save=Object.assign(defaults(),JSON.parse(raw));}}catch(e){}
 if(!save.soundV2){save.sound=true;save.soundV2=true;}
@@ -299,11 +311,13 @@ function current(x,y,t){ // slow drifting field in normalized units/sec
 function addRipple(x,y,big=1,note=true){
   ripples.push({x,y,r:0,born:simT,speed:(.09+rnd(.03))*big,life:3.2*big,alpha:.5});
   if(note)chime((1-y)*SCALE.length,.8*Math.min(1,big));
+  if(big>=1)tutEvent('tap');
   return ripples[ripples.length-1];
 }
 function releaseLantern(x,y){
   const hue=HUES[hueI++%HUES.length];
-  lanterns.push({x,y,hue,born:simT,ph:rnd(TAU),bob:0,alpha:0,id:Math.random()});
+  lanterns.push({x,y,hue,born:simT,ph:rnd(TAU),bob:0,alpha:0,id:Math.random(),settle:(tut.on&&tut.i<=4)?45:150});
+  tutEvent('lantern');
   if(lanterns.length>9){lanterns[0].leaving=true;}
   save.lanterns++;persist();
   addRipple(x,y,.7,false);chime((1-y)*SCALE.length,.9,4);setTimeout(()=>chime((1-y)*SCALE.length+4,.5,4),220);
@@ -316,7 +330,7 @@ function plantLotus(l){
   lotuses.push({x:l.x,y:l.y,hue:l.hue,born:Date.now()});
   if(lotuses.length>48)lotuses.shift();
   save.lotuses=lotuses;persist();
-  toast('A lotus has taken root','it will grow while you sleep');
+  toast('A lotus has taken root','it will grow while you sleep');tutEvent('lotus');
   renderStats();
 }
 function spawnKoi(){
@@ -325,6 +339,34 @@ function spawnKoi(){
 }
 for(let i=0;i<2;i++)spawnKoi();
 for(let i=0;i<14;i++)flies.push({x:rnd(),y:rnd(),ph:rnd(TAU),sp:rnd(.4,1),life:1});
+
+// ---------- tutorial ----------
+// Six quiet steps. Each one waits for you to actually do the thing, then moves on.
+const TUT=[
+ {t:'Touch the water.',s:'Anywhere. Every ripple plays a note from the chord that is sounding right now.',wait:'tap'},
+ {t:'Now rest your finger on the water for a moment.',s:'Hold still until a lantern lights. Let go, and it drifts with the current.',wait:'lantern'},
+ {t:'Drag slowly to stir the water.',s:'Ripples bob the lanterns and ring them. Koi scatter from your hand.',wait:'drag'},
+ {t:'Koi are drawn to lantern light.',s:'Keep a lantern over a shadow for a while and it will rise to show its colours. Each new one is kept in your journal.',wait:9000},
+ {t:'Lanterns settle into lotuses.',s:'After a few minutes afloat, a lantern leaves a lotus behind. Lotuses keep growing while you sleep, and tapping one plays a chord. Your first lantern will settle soon.',wait:'lotus'},
+ {t:'That is everything.',s:'Dim lowers the glow. Candle fades the pond to black over ten minutes so you can drift off with it. Goodnight.',wait:11000},
+];
+let tut={on:false,i:0,timer:null};
+const tutEl=$('tut');
+function tutRender(){const st=TUT[tut.i];
+  tutEl.innerHTML='<div class="card"><div class="step">'+(tut.i+1)+' of '+TUT.length+'</div><div class="text">'+st.t+'</div><div class="sub">'+st.s+'</div>'+
+    '<div class="dots">'+TUT.map((_,k)=>'<i'+(k<=tut.i?' class="on"':'')+'></i>').join('')+'</div>'+
+    (tut.i<TUT.length-1?'<button class="skip" id="tutSkip">skip the tour</button>':'')+'</div>';
+  const sk=$('tutSkip');if(sk)sk.addEventListener('click',tutEnd);
+  tutEl.classList.add('show');}
+function tutStart(){tut.on=true;tut.i=0;clearTimeout(tut.timer);$('hint').classList.remove('show');
+  tutRender();tutArm();}
+function tutArm(){clearTimeout(tut.timer);const w=TUT[tut.i].wait;if(typeof w==='number')tut.timer=setTimeout(tutNext,w);}
+function tutNext(){if(!tut.on)return;clearTimeout(tut.timer);
+  if(tut.i>=TUT.length-1){tutEnd();return;}
+  tutEl.classList.remove('show');
+  tut.timer=setTimeout(()=>{tut.i++;tutRender();tutArm();},1700);}
+function tutEnd(){tut.on=false;clearTimeout(tut.timer);tutEl.classList.remove('show');save.tut=true;persist();}
+function tutEvent(kind){if(!tut.on)return;if(TUT[tut.i].wait===kind)setTimeout(tutNext,kind==='tap'?700:1200);}
 
 // ---------- UI text ----------
 let toastT=null;
@@ -339,7 +381,7 @@ function update(dt){
     l.alpha=lerp(l.alpha,l.leaving?0:1,dt*.8);
     if(l.x<-.08||l.x>1.08||l.y<-.08||l.y>1.08)l.leaving=true;
     if(l.leaving&&l.alpha<.02){lanterns.splice(i,1);continue;}
-    if(!l.planted&&t-l.born>150){l.planted=true;if(l.x>.03&&l.x<.97&&l.y>.03&&l.y<.97)plantLotus(l);}
+    if(!l.planted&&t-l.born>(l.settle||150)){l.planted=true;if(l.x>.03&&l.x<.97&&l.y>.03&&l.y<.97)plantLotus(l);}
   }
   // ripples
   for(let i=ripples.length-1;i>=0;i--){const r=ripples[i];const age=t-r.born;r.r+=r.speed*dt;
@@ -525,7 +567,7 @@ cv.addEventListener('pointermove',e=>{
   const d=Math.hypot(e.clientX-press.sx,e.clientY-press.sy);
   if(d>10){press.moved=true;clearTimeout(press.timer);}
   if(press.moved&&Math.hypot(e.clientX-press.lastX,e.clientY-press.lastY)>38){press.lastX=e.clientX;press.lastY=e.clientY;
-    const p=pos(e);addRipple(p.x,p.y,.35,Math.random()<.35);
+    const p=pos(e);addRipple(p.x,p.y,.35,Math.random()<.35);tutEvent('drag');
     for(const k of koi){const dd=Math.hypot((k.x-p.x)*W,(k.y-p.y)*H);if(dd<90&&k.state==='swim'){k.a=Math.atan2((k.y-p.y)*H,(k.x-p.x)*W);k.tx=rnd(.1,.9);k.ty=rnd(.1,.9);}}}
 });
 function endPress(e){
@@ -602,6 +644,7 @@ function renderJournal(){
 }
 $('bJournal').addEventListener('click',()=>{renderJournal();$('journal').hidden=false;});
 $('bClose').addEventListener('click',()=>{$('journal').hidden=true;});
+$('bTut').addEventListener('click',()=>{$('journal').hidden=true;tutStart();});
 
 // ---------- boot ----------
 applyDim();
@@ -610,8 +653,8 @@ if(save.sound){$('bSound').setAttribute('aria-pressed','true');}
 addEventListener('pointerdown',function arm(){if(save.sound)setSound(true);removeEventListener('pointerdown',arm);},{once:true});
 renderStats();
 if(lotuses.length){const grown=lotuses.filter(l=>lotusStage(l)>=1).length;setTimeout(()=>toast('Welcome back',grown?grown+(grown===1?' lotus has':' lotuses have')+' opened since you left':'your pond is waiting'),900);}
-else setTimeout(()=>{$('hint').textContent='tap the water \u00b7 hold to release a lantern \u00b7 sound starts on your first touch';$('hint').classList.add('show');},1200);
-setTimeout(()=>$('hint').classList.remove('show'),14000);
+else if(!save.tut)setTimeout(tutStart,1400);
+else{setTimeout(()=>$('hint').classList.add('show'),1200);setTimeout(()=>$('hint').classList.remove('show'),12000);}
 requestWake();
 requestAnimationFrame(loop);
 })();

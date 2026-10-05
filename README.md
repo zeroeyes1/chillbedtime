@@ -10,6 +10,8 @@ A quiet bedtime game for a dark room. Open `index.html` in any browser (phone or
 - **Sound** is on by default and starts on your first touch: a warm pad that swells on slow tides between four chords, a dark reverb, and distant rain that gusts. Taps play tones from the current chord.
 - **Dim** cycles screen brightness. **Candle** fades everything to black over ten minutes so you can drift off.
 
+A six-step tour runs on your first visit and waits for you to do each thing. Replay it any time from the journal.
+
 Everything is saved in your browser's local storage. No accounts, no network, no ads.
 
 ## Play it on a phone

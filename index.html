@@ -321,7 +321,6 @@ function releaseLantern(x,y){
   if(lanterns.length>9){lanterns[0].leaving=true;}
   save.lanterns++;persist();
   addRipple(x,y,.7,false);chime((1-y)*SCALE.length,.9,4);setTimeout(()=>chime((1-y)*SCALE.length+4,.5,4),220);
-  if(navigator.vibrate)try{navigator.vibrate(8);}catch(e){}
   $('hint').classList.remove('show');
   renderStats();
 }

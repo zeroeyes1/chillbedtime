@@ -132,7 +132,7 @@ button.b:focus-visible{outline:1px solid var(--ink-dim);outline-offset:2px}
 <div id="keep"><div class="card"><div class="t" id="keepT"></div><div class="s" id="keepS"></div><div class="row"><button class="b gold" id="keepYes">Keep it</button><button class="b" id="keepNo">Let it go</button></div></div></div>
 <div id="night"><p>the pond is asleep &middot; goodnight</p></div>
 <div id="ui" role="toolbar" aria-label="Pond controls">
-  <button id="bShore" title="Light you have gathered. Spend it on the shore.">&#10022; 0</button>
+  <button id="bShore" title="Your light. Spend it on the shore.">&#10022; 0</button>
   <button id="bTonight">Tonight</button>
   <button id="bJournal">Journal</button>
   <button id="bMore">More</button>
@@ -178,28 +178,28 @@ function streak(){const set=new Set(save.nights);let n=0;const d=new Date();for(
 
 // ---------- koi species (the collection) ----------
 const SPECIES=[
- {id:'shadow',n:'Shadow koi',body:'#262b3a',marks:null,w:10},
- {id:'kohaku',n:'Kohaku',body:'#e9e3d6',marks:'#b8432b',w:8},
- {id:'bekko',n:'Bekko',body:'#e3ddd0',marks:'#1c1b22',w:7},
- {id:'chagoi',n:'Chagoi',body:'#7f6c48',marks:null,w:7},
- {id:'ogon',n:'Ogon',body:'#d6b25c',marks:null,w:6},
- {id:'asagi',n:'Asagi',body:'#5d7ca6',marks:'#b8432b',belly:true,w:6},
- {id:'showa',n:'Showa',body:'#1c1b22',marks:'#b8432b',marks2:'#e9e3d6',w:5},
- {id:'sanke',n:'Sanke',body:'#e9e3d6',marks:'#b8432b',marks2:'#1c1b22',w:5},
- {id:'shusui',n:'Shusui',body:'#6f8db5',marks:'#c5503a',w:5},
- {id:'kumonryu',n:'Kumonryu',body:'#e6e2da',marks:'#15141a',w:4},
- {id:'ochiba',n:'Ochiba',body:'#8a9aa6',marks:'#8a6a3a',w:4},
- {id:'ginrin',n:'Gin rin',body:'#cdd5df',marks:null,sparkle:true,w:3},
- {id:'tancho',n:'Tancho',body:'#ece7dc',marks:null,tancho:'#b8432b',w:3},
- {id:'karasu',n:'Karasu',body:'#0e0f16',marks:null,w:3},
- {id:'benigoi',n:'Benigoi',body:'#b0392a',marks:null,w:3},
- {id:'kujaku',n:'Kujaku',body:'#d8dde6',marks:'#d08a3c',sparkle:true,w:2},
- {id:'moon',n:'Moon koi',body:'#dfe7f7',marks:null,glow:'#bcd0ff',w:1.5,quiet:true},
- {id:'ember',n:'Ember koi',body:'#3a1a12',marks:'#ff8a4a',glow:'#ff9a5a',w:1.2},
- {id:'willow',n:'Willow koi',body:'#5f7a5a',marks:'#a7c49a',w:1.2},
- {id:'ink',n:'Ink koi',body:'#121a2a',marks:'#3b4e7a',glow:'#4b63a0',w:1,quiet:true},
- {id:'star',n:'Star koi',body:'#0f1630',marks:null,sparkle:true,glow:'#9fb4ff',w:.6,quiet:true},
- {id:'ghost',n:'Ghost koi',body:'#8e97a8',marks:'#f0f2f6',glow:'#dfe6f5',w:.5},
+ {id:'shadow',d:'a dark grey koi',n:'Shadow koi',body:'#262b3a',marks:null,w:10},
+ {id:'kohaku',d:'white with red patches',n:'Kohaku',body:'#e9e3d6',marks:'#b8432b',w:8},
+ {id:'bekko',d:'white with black spots',n:'Bekko',body:'#e3ddd0',marks:'#1c1b22',w:7},
+ {id:'chagoi',d:'plain brown, big and friendly',n:'Chagoi',body:'#7f6c48',marks:null,w:7},
+ {id:'ogon',d:'solid gold',n:'Ogon',body:'#d6b25c',marks:null,w:6},
+ {id:'asagi',d:'blue-grey with red under the belly',n:'Asagi',body:'#5d7ca6',marks:'#b8432b',belly:true,w:6},
+ {id:'showa',d:'black with red and white patches',n:'Showa',body:'#1c1b22',marks:'#b8432b',marks2:'#e9e3d6',w:5},
+ {id:'sanke',d:'white with red and black patches',n:'Sanke',body:'#e9e3d6',marks:'#b8432b',marks2:'#1c1b22',w:5},
+ {id:'shusui',d:'pale blue with a red stripe',n:'Shusui',body:'#6f8db5',marks:'#c5503a',w:5},
+ {id:'kumonryu',d:'white with black cloud shapes',n:'Kumonryu',body:'#e6e2da',marks:'#15141a',w:4},
+ {id:'ochiba',d:'grey with brown leaf shapes',n:'Ochiba',body:'#8a9aa6',marks:'#8a6a3a',w:4},
+ {id:'ginrin',d:'silver and sparkly',n:'Gin rin',body:'#cdd5df',marks:null,sparkle:true,w:3},
+ {id:'tancho',d:'white with one red spot on its head',n:'Tancho',body:'#ece7dc',marks:null,tancho:'#b8432b',w:3},
+ {id:'karasu',d:'all black',n:'Karasu',body:'#0e0f16',marks:null,w:3},
+ {id:'benigoi',d:'all red',n:'Benigoi',body:'#b0392a',marks:null,w:3},
+ {id:'kujaku',d:'silver with orange and sparkles',n:'Kujaku',body:'#d8dde6',marks:'#d08a3c',sparkle:true,w:2},
+ {id:'moon',d:'pale and softly glowing',n:'Moon koi',body:'#dfe7f7',marks:null,glow:'#bcd0ff',w:1.5,quiet:true},
+ {id:'ember',d:'dark with glowing orange',n:'Ember koi',body:'#3a1a12',marks:'#ff8a4a',glow:'#ff9a5a',w:1.2},
+ {id:'willow',d:'green with pale leaf marks',n:'Willow koi',body:'#5f7a5a',marks:'#a7c49a',w:1.2},
+ {id:'ink',d:'deep blue and glowing',n:'Ink koi',body:'#121a2a',marks:'#3b4e7a',glow:'#4b63a0',w:1,quiet:true},
+ {id:'star',d:'midnight blue with sparkles',n:'Star koi',body:'#0f1630',marks:null,sparkle:true,glow:'#9fb4ff',w:.6,quiet:true},
+ {id:'ghost',d:'pale and see-through',n:'Ghost koi',body:'#8e97a8',marks:'#f0f2f6',glow:'#dfe6f5',w:.5},
 ];
 const SP=Object.fromEntries(SPECIES.map(s=>[s.id,s]));
 const keepCost=sp=>sp.w>=5?20:sp.w>=2?30:40;
@@ -349,31 +349,31 @@ let rainMul=1;
 
 // shore items you can build with light
 const SHORE=[
- {id:'reeds',n:'Reeds',cost:20,d:'Fireflies gather in the reeds. Tap the reeds to send them out over the water.'},
- {id:'stones',n:'Stepping stones',cost:40,d:'Double-tap the water to drop a stone. Stones bend the current so you can steer lanterns. Each night a dark float appears: guide a lantern to it to light it.'},
- {id:'hollow',n:'Koi hollow',cost:60,d:'A sheltered corner where koi can stay. When a koi surfaces you can keep it, name it, and feed it each night.'},
- {id:'moongate',n:'Moon gate',cost:90,d:'The moon lays a path across the water from dusk to dawn. Lanterns on the path drift toward the moon and gather light twice as fast.'},
- {id:'rain',n:'Rain charm',cost:120,d:'Invites soft rain on some nights. Raindrops ring your lanterns for you.'},
- {id:'pods',n:'Lotus pods',cost:150,d:'Two open lotuses growing close together make a seed pod overnight. The new lotus blends their colours, and is sometimes a rare one.'},
- {id:'shrine',n:'Stone shrine',cost:200,d:'Koi trust the pond more. One that lingers in lantern light surfaces on its own, and one more koi visits each night.'},
- {id:'bell',n:'Shore bell',cost:260,d:'Tap the bell to ring every lantern on the pond at once.'},
+ {id:'reeds',n:'Reeds',cost:20,d:'Fireflies rest in the reeds. Tap the reeds to send them out over the water.'},
+ {id:'stones',n:'Stepping stones',cost:40,d:'Double-tap the water to drop a stone. Water flows around stones, so you can steer lanterns. Each night a dark float appears. Push a lantern to it to light it.'},
+ {id:'hollow',n:'Koi hollow',cost:60,d:'A quiet corner where koi can live. When a koi comes up you can keep it, name it, and feed it each night.'},
+ {id:'moongate',n:'Moon gate',cost:90,d:'From evening to morning the moon makes a bright path on the water. Lanterns on the path drift toward the moon and make light twice as fast.'},
+ {id:'rain',n:'Rain charm',cost:120,d:'Brings soft rain on some nights. The raindrops play your lanterns for you.'},
+ {id:'pods',n:'Lotus seeds',cost:150,d:'Two open lotuses close together make a seed overnight. The new lotus mixes their colours, and is sometimes a rare one.'},
+ {id:'shrine',n:'Stone shrine',cost:200,d:'Koi feel safer here. One that stays in lantern light comes up on its own, and one more koi visits each night.'},
+ {id:'bell',n:'Shore bell',cost:260,d:'Tap the bell and every lantern on the pond chimes at once.'},
 ];
 const built=id=>!!save.built[id];
 
 // night wishes: three small things to try each night
 const WISHES=[
- {id:'lantern3',t:'Float three lanterns',s:'Hold your finger on the water until one lights.',n:3,ev:'lantern'},
- {id:'ring',t:'Ring a lantern with a ripple',s:'Tap the water near a floating lantern.',n:1,ev:'ring'},
- {id:'koi',t:'Help a koi surface',s:'Keep a lantern over a koi shadow, then tap the water beside it.',n:1,ev:'koi'},
- {id:'lotus',t:'Tap an open lotus',s:'Lotuses open a few minutes after they take root, and keep growing while you sleep.',n:1,ev:'lotus',req:()=>lotuses.some(l=>lotusStage(l)>=1)},
+ {id:'lantern3',t:'Float three lanterns',s:'Hold your finger on the water until one lights up.',n:3,ev:'lantern'},
+ {id:'ring',t:'Reach a lantern with a ripple',s:'Tap the water near a floating lantern.',n:1,ev:'ring'},
+ {id:'koi',t:'Bring a koi up',s:'Keep a lantern over a koi shadow, then tap the water next to it.',n:1,ev:'koi'},
+ {id:'lotus',t:'Tap an open lotus',s:'A lotus opens a few minutes after it appears, and keeps growing while you sleep.',n:1,ev:'lotus',req:()=>lotuses.some(l=>lotusStage(l)>=1)},
  {id:'stir',t:'Stir the water',s:'Drag a slow line across the pond.',n:1,ev:'stir'},
  {id:'colours',t:'Float lanterns of three colours',s:'Each lantern lights a different colour from the last.',n:3,ev:'colour'},
- {id:'cross',t:'Send a lantern across the pond',s:'The current flows left to right. Tap behind a lantern to push it along.',n:1,ev:'cross'},
+ {id:'cross',t:'Send a lantern across the pond',s:'The water flows left to right. Tap behind a lantern to push it along.',n:1,ev:'cross'},
  {id:'feed',t:'Feed one of your koi',s:'Tap a koi you keep. It comes up to eat once a night.',n:1,ev:'feed',req:()=>save.kept.length>0},
- {id:'float',t:'Light the night float',s:'Guide a lantern to the dark float on the right. Stones bend the current.',n:1,ev:'float',req:()=>built('stones')},
+ {id:'float',t:'Light the float',s:'Push a lantern to the dark float on the right side. Stones change where the water flows.',n:1,ev:'float',req:()=>built('stones')},
  {id:'stone',t:'Drop two stones',s:'Double-tap the water.',n:2,ev:'stone',req:()=>built('stones')},
- {id:'bell',t:'Ring the shore bell',s:'Tap the bell at the right end of the shore.',n:1,ev:'bell',req:()=>built('bell')},
- {id:'koi2',t:'Help two koi surface',s:'Lantern light and a ripple bring a koi up.',n:2,ev:'koi',req:()=>built('shrine')},
+ {id:'bell',t:'Ring the bell',s:'Tap the bell at the right end of the shore.',n:1,ev:'bell',req:()=>built('bell')},
+ {id:'koi2',t:'Bring two koi up',s:'Lantern light and a ripple bring a koi up.',n:2,ev:'koi',req:()=>built('shrine')},
 ];
 function makeWishes(){
   const r=seeded(hashStr(TONIGHT+'wish'));
@@ -390,10 +390,10 @@ function wish(ev,extra){
   const ws=save.wishes;if(!ws)return;
   for(const w of ws.list){const d=wishDef(w.id);if(w.done||d.ev!==ev)continue;
     if(ev==='colour'){if(w.hues.includes(extra))continue;w.hues.push(extra);w.p=w.hues.length;}else w.p++;
-    if(w.p>=d.n){w.done=true;gainGlow(10,.5,.3);toast('Wish complete',d.t+' · ✦ 10');}
+    if(w.p>=d.n){w.done=true;gainGlow(10,.5,.3);toast('Done: '+d.t,'✦ 10');}
   }
   if(!ws.allDone&&ws.list.every(w=>w.done)){ws.allDone=true;save.shoreLit=Math.min(14,save.shoreLit+1);gainGlow(20,.5,.3);
-    setTimeout(()=>toast('All three wishes','a lantern on the shore lights for good · ✦ 20'),4300);}
+    setTimeout(()=>toast('All three done','a stone lantern on the shore is lit for good · ✦ 20'),4300);}
   persist();updateBar();
 }
 
@@ -441,7 +441,7 @@ function plantLotus(l){
   lotuses.push(lo);if(lotuses.length>48)lotuses.shift();
   const c=colourOf(lo);const isNew=!save.colours[c];save.colours[c]=Date.now();
   save.lotuses=lotuses;persist();
-  toast(isNew&&Object.keys(save.colours).length>1?'A '+COLOURS.find(k=>k.id===c).n.toLowerCase()+' lotus has taken root':'A lotus has taken root','it grows while you sleep');tutEvent('lotus');
+  toast(isNew&&Object.keys(save.colours).length>1?'A new colour: '+COLOURS.find(k=>k.id===c).n.toLowerCase()+' lotus':'A new lotus','it keeps growing while you sleep');tutEvent('lotus');
 }
 function lotusStage(lo){const age=Date.now()-lo.born;return age<120e3?0:age<10*60e3?1:age<60*60e3?2:3;}
 
@@ -506,7 +506,7 @@ function startRise(k){if(k.mode==='rise'||k.pet)return;k.mode='rise';k.rev=0;k.s
 function onSurfaced(k){
   const isNew=!save.koi[k.sp.id];save.koi[k.sp.id]=Date.now();
   gainGlow(isNew?10:5,k.x,k.y);
-  toast((isNew?'A new koi: ':'')+k.sp.n+(isNew?'':' surfaced'),(isNew?'added to your journal · ✦ 10':'✦ 5'));
+  toast((isNew?'A new koi: ':'')+k.sp.n+(isNew?'':' came up'),(isNew?k.sp.d+' · ✦ 10':'✦ 5'));
   chord((1-k.y)*SCALE.length);addRipple(k.x,k.y,1.2,false,0);wish('koi');persist();
   if(built('hollow')&&save.kept.length<6)offerKeep(k);
 }
@@ -514,7 +514,7 @@ let keepFor=null,keepT=null;
 function offerKeep(k){
   keepFor=k;const cost=keepCost(k.sp);
   $('keepT').textContent='Keep this '+k.sp.n+'?';
-  $('keepS').textContent='It will live in your pond for good. You can name it in the journal and feed it each night.';
+  $('keepS').textContent=k.sp.d.charAt(0).toUpperCase()+k.sp.d.slice(1)+'. It will live in your pond for good. You can name it in the journal and feed it each night.';
   $('keepYes').innerHTML='Keep it · ✦ '+cost;$('keepYes').disabled=save.glow<cost;
   $('keep').classList.add('show');clearTimeout(keepT);keepT=setTimeout(closeKeep,16000);
 }
@@ -524,7 +524,7 @@ $('keepYes').addEventListener('click',()=>{const k=keepFor;if(!k)return;if(!spen
   const used=save.kept.map(p=>p.name);const name=KOI_NAMES.find(n=>!used.includes(n))||('Koi '+(save.kept.length+1));
   const entry={sp:k.sp.id,name,born:TONIGHT,fed:null};save.kept.push(entry);persist();
   const p=makeKoi(entry.sp,entry);p.x=k.x;p.y=k.y;p.a=k.a;p.vis=1;pets.push(p);
-  koi.splice(koi.indexOf(k),1);spawnKoi();closeKeep();toast(name+' stays with you','find it in the journal');});
+  koi.splice(koi.indexOf(k),1);spawnKoi();closeKeep();toast(name+' is yours now','see it in the journal');});
 function feedPet(p){
   const e=p.pet;p.mode='mouth';p.modeT=3;p.mouthed=false;
   if(e.fed!==TONIGHT){e.fed=TONIGHT;gainGlow(5,p.x,p.y);toast(e.name+' ate well','✦ 5');wish('feed');persist();}
@@ -540,7 +540,7 @@ function toggleStone(x,y){
 }
 if(save.stonesNight!==TONIGHT){save.stones=[];save.stonesNight=TONIGHT;}
 if(built('stones')&&(!save.float||save.float.night!==TONIGHT)){const r=seeded(hashStr(TONIGHT+'float'));save.float={night:TONIGHT,x:.62+r()*.28,y:.15+r()*.4,lit:false};}
-function lightFloat(l){save.float.lit=true;persist();gainGlow(15,l.x,l.y);chord(6);addRipple(l.x,l.y,1.4,false,0);toast('The night float is lit','✦ 15');wish('float');}
+function lightFloat(l){save.float.lit=true;persist();gainGlow(15,l.x,l.y);chord(6);addRipple(l.x,l.y,1.4,false,0);toast('The float is lit','✦ 15');wish('float');}
 
 // lotus pods (blended colours)
 function checkPods(){
@@ -553,13 +553,13 @@ function checkPods(){
     let diff=Math.abs(((a.hue-b.hue)%360+540)%360-180);let hue=(a.hue+b.hue)/2;if(Math.abs(a.hue-b.hue)>180)hue=(hue+180)%360;
     const pod={x:mx,y:my,hue,born:Date.now()};const r=Math.random();
     if(diff>100){if(r<.45)pod.silver=true;else if(r<.65)pod.ink=true;}
-    save.pods.push(pod);persist();toast('A seed pod is forming','it opens by tomorrow night');}
+    save.pods.push(pod);persist();toast('A seed is growing','it opens by tomorrow night');}
 }
 function ripenPods(){
   for(let i=save.pods.length-1;i>=0;i--){const p=save.pods[i];if(Date.now()-p.born>6*3600e3){save.pods.splice(i,1);
     const lo={x:p.x,y:p.y,hue:p.hue,born:Date.now()-150e3};if(p.silver)lo.silver=true;if(p.ink)lo.ink=true;
     if(!lotuses.some(o=>Math.hypot((o.x-lo.x)*W,(o.y-lo.y)*H)<20)){lotuses.push(lo);const c=colourOf(lo);const isNew=!save.colours[c];save.colours[c]=Date.now();
-      setTimeout(()=>toast('A seed pod opened',(isNew?'a new colour: ':'')+COLOURS.find(k=>k.id===c).n+' lotus'),2600);}
+      setTimeout(()=>toast('A seed opened',(isNew?'a new colour: ':'')+COLOURS.find(k=>k.id===c).n+' lotus'),2600);}
     save.lotuses=lotuses;persist();}}
 }
 ripenPods();
@@ -570,7 +570,7 @@ if(firstVisitTonight&&built('hollow')&&save.kept.length<6&&Math.random()<.5){
   const pair=Object.values(by).find(a=>a.length>=2);
   if(pair){const used=save.kept.map(p=>p.name);const name=KOI_NAMES.find(n=>!used.includes(n))||'Little one';
     const sp=Math.random()<.4?pair[0].sp:pickSpecies(1.8).id;save.kept.push({sp,name,born:TONIGHT,fed:null,young:TONIGHT});persist();syncPets();
-    setTimeout(()=>toast('A small koi appeared',pair[0].name+' and '+pair[1].name+' have a fry. Its name is '+name),3200);}
+    setTimeout(()=>toast('A baby koi',pair[0].name+' and '+pair[1].name+' had a little one. Its name is '+name),3200);}
 }
 
 // light gathered while away (open lotuses keep working)
@@ -579,7 +579,7 @@ if(firstVisitTonight&&built('hollow')&&save.kept.length<6&&Math.random()<.5){
   const open=lotuses.filter(l=>lotusStage(l)>=1).length;if(!open)return;
   const g=Math.min(40,Math.floor(min/4*open));if(g<1)return;
   save.glow+=g;save.glowTotal=(save.glowTotal||0)+g;
-  setTimeout(()=>toast('Welcome back','your lotuses gathered ✦ '+g+' while you were away'),900);
+  setTimeout(()=>toast('Welcome back','your lotuses made ✦ '+g+' while you were away'),900);
 })();
 setInterval(()=>{save.lastSeen=Date.now();persist();},30000);
 
@@ -831,8 +831,8 @@ const TUT=[
  {t:'Touch the water.',s:'Every ripple plays a note.',wait:'tap'},
  {t:'Hold still until a lantern lights.',s:'Rest your finger on the water. Let go and it drifts.',wait:'lantern'},
  {t:'Tap just behind the lantern.',s:'Ripples push whatever they reach. This is how you steer.',wait:'ring'},
- {t:'Everything you do gathers light.',s:'Lanterns afloat, koi that surface, lotuses that open. Spend it on the shore to add things to your pond.',wait:7000},
- {t:'Tonight has three small wishes.',s:'Finish them to light a lantern on the shore for good. Take your time.',wait:'manual',done:'Show me tonight’s wishes'},
+ {t:'Everything you do makes light.',s:'Lanterns on the water, koi that come up, lotuses that open. Spend it on the shore to add things to your pond.',wait:7000},
+ {t:'Tonight has three small things to try.',s:'Finish all three and a stone lantern on the shore lights up for good. Take your time.',wait:'manual',done:'Show me tonight’s three'},
 ];
 let tut={on:false,i:0,timer:null};
 const tutEl=$('tut');
@@ -883,7 +883,7 @@ function endPress(e){
   if(py>shoreTop-10){
     if(built('reeds')&&px<W*.18){for(let i=0;i<6;i++)flies.push({x:p.x+rnd(-.02,.02),y:(shoreTop-20)/H,ph:rnd(TAU),sp:rnd(.6,1.2),life:.99});if(flies.length>40)flies.splice(0,flies.length-40);chime(7,.3,3);return;}
     if(built('bell')&&px>W*.82){ringBell();return;}
-    if(built('hollow')&&px>W*.1&&px<W*.34){toast(save.kept.length?'Your koi: '+save.kept.map(k=>k.name).join(', '):'The hollow is empty','keep a koi when one surfaces');return;}
+    if(built('hollow')&&px>W*.1&&px<W*.34){toast(save.kept.length?'Your koi: '+save.kept.map(k=>k.name).join(', '):'No koi live here yet','keep one when it comes up');return;}
     return;
   }
   // double-tap: stone
@@ -953,16 +953,16 @@ function openPanel(kind){
   let h='';
   if(kind==='tonight'){
     const ws=save.wishes,m=moon(),rain=rainNight();
-    const sky=rain?'Soft rain tonight. The drops ring your lanterns for you.':m?(built('moongate')?'The moon is up and its path lies on the water.':'The moon is up.'):'A still, dark night.';
+    const sky=rain?'Soft rain tonight. The drops play your lanterns for you.':m?(built('moongate')?'The moon is up and its path is on the water.':'The moon is up.'):'A still, dark night.';
     h+='<h1>Tonight '+glowTag+'</h1><p class="lead">'+sky+'</p>';
-    h+='<div><h2>Three small wishes</h2><div class="list">';
+    h+='<div><h2>Three things to try tonight</h2><div class="list">';
     for(const w of ws.list){const d=wishDef(w.id);h+='<div class="row'+(w.done?' done':'')+'"><div class="ic">'+(w.done?'&#10003;':'')+'</div><div class="body"><div class="n">'+esc(d.t)+'</div><div class="d">'+esc(d.s)+'</div></div><div class="act"><span class="pr">'+(w.done?'&#10022; 10':(d.n>1?Math.min(w.p,d.n)+' of '+d.n:''))+'</span></div></div>';}
-    h+='</div><p style="margin-top:10px">'+(ws.allDone?'All three done. A lantern on the shore is lit for good.':'Each wish gathers &#10022; 10. Finish all three and a lantern on the shore lights for good.')+' '+save.shoreLit+' of 14 shore lanterns are lit.</p></div>';
+    h+='</div><p style="margin-top:10px">'+(ws.allDone?'All three done. A stone lantern on the shore is lit for good.':'Each one is worth &#10022; 10. Finish all three and a stone lantern on the shore lights up for good.')+' '+save.shoreLit+' of 14 are lit so far.</p></div>';
     if(save.kept.length){h+='<div><h2>Your koi</h2><div class="list">';for(const k of save.kept){h+='<div class="row"><div class="ic">'+(k.fed===TONIGHT?'&#10003;':'')+'</div><div class="body"><div class="n">'+esc(k.name)+'</div><div class="d">'+esc(SP[k.sp].n)+(k.young?' · still small':'')+' · '+(k.fed===TONIGHT?'fed tonight':'tap it on the pond to feed it')+'</div></div></div>';}h+='</div></div>';}
-    if(built('stones'))h+='<div><h2>The night float</h2><p>'+(save.float&&save.float.lit?'Lit. It will drift somewhere new tomorrow.':'A dark float waits on the right side of the pond. Guide a lantern to it. Double-tap the water to drop stones that bend the current, and tap behind a lantern to push it.')+'</p></div>';
-    h+='<div><h2>How the pond works</h2><p>Tap the water: a ripple and a note. Hold: a lantern. Tap behind a lantern: it drifts that way. Drag: stir. '+(built('stones')?'Double-tap: a stone. ':'')+'A lantern that floats long enough leaves a lotus, and lotuses keep growing while you sleep.</p></div>';
+    if(built('stones'))h+='<div><h2>The float</h2><p>'+(save.float&&save.float.lit?'Lit. It will be somewhere new tomorrow.':'A dark float waits on the right side of the pond. Push a lantern to it. Tap behind a lantern to push it, and double-tap the water to drop stones that change where the water flows.')+'</p></div>';
+    h+='<div><h2>How to play</h2><p>Tap the water for a ripple and a note. Hold your finger down for a lantern. Tap behind a lantern to push it. Drag to stir. '+(built('stones')?'Double-tap to drop a stone. ':'')+'A lantern that floats long enough turns into a lotus, and lotuses keep growing while you sleep.</p></div>';
   }else if(kind==='shore'){
-    h+='<h1>The shore '+glowTag+'</h1><p class="lead">Light gathers on its own: every lantern afloat, every koi that surfaces, every lotus that opens, even while you sleep. Spend it here.</p>';
+    h+='<h1>The shore '+glowTag+'</h1><p class="lead">You get light from every lantern on the water, every koi that comes up, and every open lotus, even while you sleep. Spend it here.</p>';
     h+='<div class="list">';
     SHORE.forEach((it,i)=>{const b=built(it.id);const can=save.glow>=it.cost;
       h+='<div class="row'+(b?' built':'')+'"><div class="ic">'+(b?'&#10022;':(i+1))+'</div><div class="body"><div class="n">'+esc(it.n)+'</div><div class="d">'+esc(it.d)+'</div></div><div class="act">'+
@@ -970,18 +970,18 @@ function openPanel(kind){
     h+='</div>';
   }else if(kind==='journal'){
     const s=streak(),found=Object.keys(save.koi).length,cols=Object.keys(save.colours).length;
-    h+='<h1>Journal '+glowTag+'</h1><p class="lead">'+(s>1?'Night '+s+' in a row. ':'')+(isQuietHour()?'It is a quiet hour. The shy koi are out.':'The shy koi come out after eleven.')+'</p>';
-    h+='<div class="stats"><div class="stat"><b>'+save.nights.length+'</b><span>nights</span></div><div class="stat"><b>'+s+'</b><span>in a row</span></div><div class="stat"><b>'+save.lanterns+'</b><span>lanterns</span></div><div class="stat"><b>'+lotuses.length+'</b><span>lotuses</span></div><div class="stat"><b>'+(save.glowTotal||0)+'</b><span>light gathered</span></div><div class="stat"><b>'+save.shoreLit+'</b><span>shore lit</span></div></div>';
+    h+='<h1>Journal '+glowTag+'</h1><p class="lead">'+(s>1?'Night '+s+' in a row. ':'')+(isQuietHour()?'It is late. The shy koi are out.':'The shy koi come out after 11pm.')+'</p>';
+    h+='<div class="stats"><div class="stat"><b>'+save.nights.length+'</b><span>nights</span></div><div class="stat"><b>'+s+'</b><span>in a row</span></div><div class="stat"><b>'+save.lanterns+'</b><span>lanterns</span></div><div class="stat"><b>'+lotuses.length+'</b><span>lotuses</span></div><div class="stat"><b>'+(save.glowTotal||0)+'</b><span>light so far</span></div><div class="stat"><b>'+save.shoreLit+'</b><span>shore lanterns lit</span></div></div>';
     if(save.kept.length){h+='<div><h2>Your koi</h2><p>Tap a name to change it.</p><div id="keptList"></div></div>';}
-    h+='<div><h2>Koi that surfaced · '+found+' of '+SPECIES.length+'</h2><p>Koi are drawn to lantern light. One that lingers under a lantern will show its colours; tap the water beside it to bring it up. Some only come on quiet nights.</p><div class="koi-grid" id="koiGrid"></div></div>';
-    h+='<div><h2>Lotus colours · '+cols+' of '+COLOURS.length+'</h2><p>A lotus takes the colour of the lantern that left it. '+(built('pods')?'Two open lotuses close together can make a seed pod with a blended colour.':'The shore has a way to blend them.')+'</p><div class="swatches">'+COLOURS.map(c=>'<span class="sw'+(save.colours[c.id]?' found':'')+'"><i style="'+(save.colours[c.id]?(c.h>=0?'background:hsl('+c.h+',60%,72%)':c.id==='silver'?'background:#e2e8f5':'background:#4a5f94'):'')+'"></i>'+(save.colours[c.id]?c.n:'· · ·')+'</span>').join('')+'</div></div>';
+    h+='<div><h2>Koi you have seen · '+found+' of '+SPECIES.length+'</h2><p>Koi like lantern light. One that stays under a lantern shows its colours. Tap the water next to it and it comes up. Some only come out late at night.</p><div class="koi-grid" id="koiGrid"></div></div>';
+    h+='<div><h2>Lotus colours · '+cols+' of '+COLOURS.length+'</h2><p>A lotus is the same colour as the lantern it came from. '+(built('pods')?'Two open lotuses close together can make a seed with a mixed colour.':'Something on the shore can mix them.')+'</p><div class="swatches">'+COLOURS.map(c=>'<span class="sw'+(save.colours[c.id]?' found':'')+'"><i style="'+(save.colours[c.id]?(c.h>=0?'background:hsl('+c.h+',60%,72%)':c.id==='silver'?'background:#e2e8f5':'background:#4a5f94'):'')+'"></i>'+(save.colours[c.id]?c.n:'· · ·')+'</span>').join('')+'</div></div>';
   }else if(kind==='more'){
     h+='<h1>More</h1><div class="toggles">'+
       '<button class="b'+(save.sound?' gold':'')+'" id="mSound">Sound '+(save.sound?'on':'off')+'</button>'+
       '<button class="b" id="mDim">Dim: '+['off','a little','more','most'][save.dim]+'</button>'+
       '<button class="b'+(candle?' gold':'')+'" id="mCandle">'+(candle?'Relight the candle':'Light the candle')+'</button>'+
       '<button class="b" id="mTour">Show me how to play</button></div>'+
-      '<p>Sound is a slow, wordless swell with distant rain, and starts on your first touch. The candle fades the pond to black over ten minutes so you can fall asleep with it.</p>'+
+      '<p>Sound is slow and soft, with faraway rain. It starts when you first touch the water. The candle slowly fades the pond to black over ten minutes so you can fall asleep with it.</p>'+
       '<div><h2>Start over</h2><p>Clears everything: light, koi, lotuses and the shore.</p><div class="toggles" style="margin-top:10px"><button class="b" id="mReset">Reset the pond</button></div></div>';
   }
   wrap.innerHTML=h;
@@ -989,7 +989,7 @@ function openPanel(kind){
     const kl=$('keptList');if(kl)for(const k of save.kept){const d=document.createElement('div');d.className='kept';d.appendChild(miniKoi(SP[k.sp],true,k.young?.6:1));
       const box=document.createElement('div');box.className='k';const inp=document.createElement('input');inp.value=k.name;inp.maxLength=18;inp.setAttribute('aria-label','Name of this koi');inp.id='name-'+k.name.replace(/\W/g,'');
       inp.addEventListener('change',()=>{k.name=inp.value.trim()||k.name;inp.value=k.name;persist();});box.appendChild(inp);
-      const sm=document.createElement('small');sm.textContent=SP[k.sp].n+' · since '+k.born+(k.young?' · still small':'');box.appendChild(sm);d.appendChild(box);kl.appendChild(d);}
+      const sm=document.createElement('small');sm.textContent=SP[k.sp].n+', '+SP[k.sp].d+(k.young?' · still small':'');box.appendChild(sm);d.appendChild(box);kl.appendChild(d);}
     const grid=$('koiGrid');for(const sp of SPECIES){const f=!!save.koi[sp.id];const d=document.createElement('div');d.className='koi'+(f?' found':'')+(sp.w<2?' rare':'');
       d.appendChild(miniKoi(sp,f));const s=document.createElement('span');s.textContent=f?sp.n:'· · ·';d.appendChild(s);grid.appendChild(d);}
   }
@@ -997,7 +997,7 @@ function openPanel(kind){
     if(!spendGlow(it.cost)){toast('Not enough light yet');return;}save.built[it.id]=true;persist();
     if(it.id==='stones'&&(!save.float||save.float.night!==TONIGHT)){const r=seeded(hashStr(TONIGHT+'float'));save.float={night:TONIGHT,x:.62+r()*.28,y:.15+r()*.4,lit:false};}
     if(it.id==='reeds')for(let i=0;i<10;i++)flies.push({x:rnd(.03,.2),y:rnd(.6,.85),ph:rnd(TAU),sp:rnd(.4,1),life:1});
-    persist();openPanel('shore');toast(it.n+' built',{reeds:'they sway at the left end of the shore',stones:'double-tap the water to drop one',hollow:'keep the next koi that surfaces',moongate:'watch for the moon path from dusk to dawn',rain:'rain comes on some nights',pods:'let two open lotuses grow near each other',shrine:'koi linger longer in the light',bell:'tap it at the right end of the shore'}[it.id]);}));}
+    persist();openPanel('shore');toast(it.n+' built',{reeds:'they sway at the left end of the shore',stones:'double-tap the water to drop one',hollow:'you can keep the next koi that comes up',moongate:'look for the moon path in the evening',rain:'rain comes on some nights',pods:'let two open lotuses grow near each other',shrine:'koi stay longer in the light',bell:'tap it at the right end of the shore'}[it.id]);}));}
   if(kind==='more'){
     $('mSound').addEventListener('click',()=>{setSound(!save.sound);openPanel('more');});
     $('mDim').addEventListener('click',()=>{save.dim=(save.dim+1)%DIMS.length;persist();applyDim();openPanel('more');});
@@ -1020,7 +1020,7 @@ addEventListener('pointerdown',function arm(){if(save.sound)setSound(true);remov
 if(built('reeds'))for(let i=0;i<14;i++)flies.push({x:rnd(.03,.2),y:rnd(.5,.85),ph:rnd(TAU),sp:rnd(.4,1),life:1});
 else for(let i=0;i<6;i++)flies.push({x:rnd(),y:rnd(.1,.8),ph:rnd(TAU),sp:rnd(.4,1),life:1});
 if(!save.tut)setTimeout(tutStart,1400);
-else{const grown=lotuses.filter(l=>lotusStage(l)>=1).length;setTimeout(()=>{if(!$('toast').classList.contains('show'))toast(firstVisitTonight?'Welcome back':'The pond is waiting',firstVisitTonight?'three new wishes tonight':'');},1200);}
+else{const grown=lotuses.filter(l=>lotusStage(l)>=1).length;setTimeout(()=>{if(!$('toast').classList.contains('show'))toast(firstVisitTonight?'Welcome back':'The pond is waiting',firstVisitTonight?'three new things to try tonight':'');},1200);}
 requestWake();
 requestAnimationFrame(loop);
 window.__pond={save,lanterns,koi,pets,lotuses,ripples,gainGlow,wish,startRise,releaseLantern,dbg,openPanel,get simT(){return simT;},moon,makeWishes,persist,step:(s)=>{for(let i=0;i<s*30;i++){simT+=1/30;update(1/30);}}};

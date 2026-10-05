@@ -84,7 +84,9 @@ button.b:focus-visible{outline:1px solid var(--ink-dim);outline-offset:2px}
 #panel h2{font:14px var(--font-ui);letter-spacing:.16em;text-transform:uppercase;color:var(--ink-dim);margin:0 0 10px;font-weight:500}
 #panel p{margin:0;color:var(--ink-dim);line-height:1.6;font-size:17px;max-width:60ch}
 #panel p.lead{color:var(--ink);font-family:var(--font-display);font-size:22px;font-style:italic;line-height:1.4}
-#panel .close{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;padding:10px 16px calc(env(safe-area-inset-bottom,0px) + 12px);background:linear-gradient(transparent,rgba(4,7,14,.9) 40%)}
+[hidden]{display:none!important}
+#panelClose{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;padding:18px 16px calc(env(safe-area-inset-bottom,0px) + 12px);background:linear-gradient(transparent,rgba(4,7,14,.92) 45%)}
+#panelClose .b{background:rgba(4,7,14,.6)}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
 .stat{border-top:1px solid var(--line);padding-top:10px}
 .stat b{display:block;font-family:var(--font-display);font-weight:500;font-size:38px;line-height:1;font-variant-numeric:tabular-nums}
@@ -139,8 +141,8 @@ button.b:focus-visible{outline:1px solid var(--ink-dim);outline-offset:2px}
 </div>
 <div id="panel" hidden>
   <div class="wrap" id="panelWrap"></div>
-  <div class="close"><button class="b" id="bClose">Back to the pond</button></div>
 </div>
+<div id="panelClose" hidden><button class="b" id="bClose">Back to the pond</button></div>
 <script>
 (function(){
 'use strict';
@@ -235,7 +237,7 @@ const CHORDS=[
 let chordI=0,voices=[],audioTimers=[];
 function chordTones(){const c=CHORDS[chordI];const t=[];for(const f of c){t.push(f*2,f*4);}t.sort((a,b)=>a-b);return t.filter(f=>f>=150&&f<=900).slice(0,10);}
 function makeReverb(){
-  const len=Math.floor(AC.sampleRate*4.2),buf=AC.createBuffer(2,len,AC.sampleRate);
+  const len=Math.floor(AC.sampleRate*3),buf=AC.createBuffer(2,len,AC.sampleRate);
   for(let ch=0;ch<2;ch++){const d=buf.getChannelData(ch);let lp=0;
     for(let i=0;i<len;i++){const t=i/len;const env=Math.pow(1-t,2.2)*Math.exp(-t*2.5);
       lp+=( (Math.random()*2-1)-lp)*.18; // one-pole lowpass: darker tail
@@ -250,7 +252,7 @@ function makeNoise(){
 function ensureAudio(){
   if(AC)return true;
   try{
-    AC=new (window.AudioContext||window.webkitAudioContext)();
+    AC=new (window.AudioContext||window.webkitAudioContext)({latencyHint:'playback'});
     const comp=AC.createDynamicsCompressor();comp.threshold.value=-24;comp.knee.value=18;comp.ratio.value=3;comp.attack.value=.05;comp.release.value=.6;
     master=AC.createGain();master.gain.value=0;master.connect(comp);comp.connect(AC.destination);
     reverb=makeReverb();const rv=AC.createGain();rv.gain.value=.9;reverb.connect(rv);rv.connect(master);
@@ -306,10 +308,12 @@ function setSound(on){
   else if(AC){ master.gain.cancelScheduledValues(AC.currentTime); master.gain.setTargetAtTime(0,AC.currentTime,.6); later(()=>{if(AC&&!save.sound)AC.suspend();},3000); }
 }
 // Player sounds: soft, slow-attack tones taken from the current chord, mostly heard through the reverb.
+let chimeTimes=[];
 function chime(idx,vel=1,dur=3){
-  if(!AC||!save.sound)return;
+  if(!AC||!save.sound||AC.state==='closed')return;
+  const nowT=AC.currentTime;chimeTimes=chimeTimes.filter(x=>nowT-x<.4);if(chimeTimes.length>=5)return;chimeTimes.push(nowT);
   const tones=chordTones();const f=tones[clamp(Math.round(idx),0,tones.length-1)];
-  const t=AC.currentTime;
+  const t=nowT+.04;
   const g=AC.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.09*vel,t+.09);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
   const lp=AC.createBiquadFilter();lp.type='lowpass';lp.frequency.setValueAtTime(1600,t);lp.frequency.exponentialRampToValueAtTime(500,t+dur);
   const o=AC.createOscillator();o.type='sine';o.frequency.value=f;
@@ -318,7 +322,7 @@ function chime(idx,vel=1,dur=3){
   o.connect(lp);o2.connect(g2);g2.connect(lp);lp.connect(g);
   const dry=AC.createGain();dry.gain.value=.4;g.connect(dry);dry.connect(master);
   const wet=AC.createGain();wet.gain.value=.9;g.connect(wet);wet.connect(reverb);
-  o.start(t);o2.start(t);o.stop(t+dur+.1);o2.stop(t+dur+.1);
+  o.start(t);o2.start(t);o.stop(t+dur+.3);o2.stop(t+dur+.3);
 }
 function chord(baseIdx){chime(baseIdx,.8,4.5);setTimeout(()=>chime(baseIdx+2,.6,4.2),260);setTimeout(()=>chime(baseIdx+4,.5,4),560);}
 
@@ -394,7 +398,7 @@ function wish(ev,extra){
     if(w.p>=d.n){w.done=true;gainGlow(10,.5,.3);toast('Done: '+d.t,'✦ 10');}
   }
   if(!ws.allDone&&ws.list.every(w=>w.done)){ws.allDone=true;save.shoreLit=Math.min(14,save.shoreLit+1);gainGlow(20,.5,.3);
-    setTimeout(()=>toast('All three done','a stone lantern on the shore is lit for good · ✦ 20'),4300);}
+    toast('All three done','a stone lantern on the shore is lit for good · ✦ 20');}
   persist();updateBar();
 }
 
@@ -491,19 +495,20 @@ function koiStep(k,dt,t){
       if(!k.pet&&built('shrine')&&k.lightT>14){startRise(k);}
       if(k.modeT<0){k.mode='cruise';k.modeT=rnd(6,12);const w=waypoint();k.tx=w.x;k.ty=w.y;}}
   }else if(k.mode==='rise'){
-    k.rev+=dt/9;sp=base*.22;want=k.a;
+    k.rev+=dt/11;sp=base*.22;want=k.a;
     if(k.rev>.35&&!k.shown){k.shown=true;onSurfaced(k);}
-    if(k.rev>=1){k.mode='cruise';k.modeT=rnd(5,11);k.vis=0;k.lightT=0;k.rev=0;k.shown=false;if(!k.pet)k.sp=pickSpecies();}
+    if(k.rev>=1){k.mode='cruise';k.modeT=rnd(5,11);k.lightT=0;k.rev=0;k.shown=false;if(!k.pet)k.pendingSp=true;const w=waypoint();k.tx=w.x;k.ty=w.y;}
   }
   if(want!==null){let da=want-k.a;while(da>Math.PI)da-=TAU;while(da<-Math.PI)da+=TAU;k.a+=clamp(da,-1.1*dt,1.1*dt);}
   k.x+=Math.cos(k.a)*sp*dt/W;k.y+=Math.sin(k.a)*sp*dt/H;
   if(k.y>waterBottom()-.02){k.y=waterBottom()-.02;if(Math.sin(k.a)>0)k.a=-k.a;}
   if(k.y<.03){k.y=.03;k.a=Math.abs(k.a);}
-  const target=k.pet?1:(k.mode==='rise'?1:k.mode==='mouth'?.9:lit?.75:0);
-  k.vis=lerp(k.vis,target,dt*(target>k.vis?1.2:.5));
+  const target=k.pet?1:(k.mode==='rise'?1:k.mode==='mouth'?.6:lit?.75:0);
+  k.vis=lerp(k.vis,target,dt*(target>k.vis?.55:.28));
+  if(k.pendingSp&&k.vis<.04&&!lit){k.sp=pickSpecies();k.pendingSp=false;}
   if(k.pet&&k.pet.young){k.scale=lerp(k.scale,clamp(.45+nightsSince(k.pet.young)*.2,.45,1),dt);if(nightsSince(k.pet.young)>=3){delete k.pet.young;persist();}}
 }
-function startRise(k){if(k.mode==='rise'||k.pet)return;k.mode='rise';k.rev=0;k.shown=false;}
+function startRise(k){if(k.mode==='rise'||k.pet)return;if(koi.some(o=>o.mode==='rise'))return;k.mode='rise';k.rev=0;k.shown=false;}
 function onSurfaced(k){
   const isNew=!save.koi[k.sp.id];save.koi[k.sp.id]=Date.now();
   gainGlow(isNew?10:5,k.x,k.y);
@@ -594,8 +599,11 @@ function ringBell(){
 }
 
 // ---------- UI text ----------
-let toastT=null;
-function toast(a,b){const el=$('toast');el.innerHTML=esc(a)+(b?'<small>'+esc(b)+'</small>':'');el.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),4200);}
+const toastQ=[];let toastBusy=false;
+function toast(a,b){if(toastQ.some(x=>x.a===a&&x.b===b))return;toastQ.push({a,b:b||''});if(toastQ.length>6)toastQ.splice(0,toastQ.length-6);toastPump();}
+function toastPump(){if(toastBusy||!toastQ.length)return;const {a,b}=toastQ.shift();const el=$('toast');toastBusy=true;
+  el.innerHTML=esc(a)+(b?'<small>'+esc(b)+'</small>':'');el.classList.add('show');
+  setTimeout(()=>{el.classList.remove('show');setTimeout(()=>{toastBusy=false;toastPump();},1500);},3800);}
 const dbg={};
 
 // ---------- update ----------
@@ -701,22 +709,26 @@ function koiMarks(x,pts,L,s,t,seed){
 function drawKoi(k,t){
   const x=k.x*W,y=k.y*H,L=k.len*(Smin/700+.4)*k.scale,s=k.sp;
   const rise=k.mode==='rise'?Math.sin(Math.min(1,k.rev)*Math.PI):0;
-  const depthA=.42+k.vis*.25+rise*.33;
-  const show=Math.max(rise,k.vis>.5?(k.vis-.5)*2:0);
-  ctx.save();ctx.translate(x,y);ctx.rotate(k.a);
+  // how near the surface it is: 0 deep shadow, 1 right under the surface
+  const up=k.pet?1:clamp(Math.max(k.vis,rise),0,1);
+  const ss=up*up*(3-2*up); // eased
+  const depthA=.4+ss*.6;
+  const near=1+ss*.08; // a little bigger when it is near the surface
+  ctx.save();ctx.translate(x,y);ctx.rotate(k.a);ctx.scale(near,near);
   const pts=koiPts(L,k);
-  ctx.globalAlpha=depthA;
   const shadow='rgba(14,18,30,1)';
-  if(s.glow&&show>0){ctx.shadowColor=s.glow;ctx.shadowBlur=18*show;}
-  koiFins(ctx,pts,L,show>.5?s.body:shadow);
-  koiBody(ctx,pts,L,show>.5?s.body:shadow);
-  ctx.shadowBlur=0;
-  if(show>0){
-    ctx.globalAlpha=depthA*Math.min(1,show);
-    ctx.save();koiClip(ctx,pts);koiBody(ctx,pts,L,s.body);koiMarks(ctx,pts,L,s,t,s.id.length*7);ctx.restore();
-    ctx.globalAlpha=depthA*Math.min(1,show)*.45;ctx.fillStyle='rgba(255,255,255,.35)';ctx.beginPath();ctx.ellipse(pts[2][0],pts[2][1]-pts[2][2]*.35,L*.14,L*.04,0,0,TAU);ctx.fill();
+  ctx.globalAlpha=depthA;
+  koiFins(ctx,pts,L,shadow);koiBody(ctx,pts,L,shadow);
+  if(ss>.01){
+    ctx.globalAlpha=depthA*ss;
+    if(s.glow){ctx.shadowColor=s.glow;ctx.shadowBlur=18*ss;}
+    koiFins(ctx,pts,L,s.body);koiBody(ctx,pts,L,s.body);ctx.shadowBlur=0;
+    ctx.save();koiClip(ctx,pts);koiMarks(ctx,pts,L,s,t,s.id.length*7);ctx.restore();
+    ctx.globalAlpha=depthA*ss*.45;ctx.fillStyle='rgba(255,255,255,.35)';ctx.beginPath();ctx.ellipse(pts[2][0],pts[2][1]-pts[2][2]*.35,L*.14,L*.04,0,0,TAU);ctx.fill();
   }
   ctx.restore();
+  // the water bulges a little over a koi right at the surface
+  if(rise>.2){ctx.save();ctx.globalAlpha=(rise-.2)*.5;ctx.strokeStyle='rgba(190,210,240,.5)';ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(x,y,L*.55*near,L*.3*near,k.a,0,TAU);ctx.stroke();ctx.restore();}
 }
 function drawLantern(l,t){
   const x=l.x*W,y=l.y*H,bob=Math.sin(l.ph)*1.6+l.bob*6*Math.sin(l.ph*7);
@@ -768,7 +780,7 @@ function drawMoon(t){
   ctx.restore();
   // its reflection: a column of broken light on the water
   ctx.save();ctx.globalCompositeOperation='lighter';
-  const top=y+r*2.2,bottom=shoreTop-10,n=26;const strong=built('moongate')?1.8:1;
+  const top=y+r*2.2,bottom=shoreTop-10,n=18;const strong=built('moongate')?1.8:1;
   for(let i=0;i<n;i++){const u=i/n;const yy=top+u*(bottom-top);const sh=Math.sin(t*1.1+i*1.9)*.5+.5;const w=r*(1.2+u*2.6)*(.3+.7*Math.abs(Math.sin(t*.7+i*2.3)));const a=(.05+.05*sh)*(1-u*.5)*(u<.12?u/.12:1)*strong;
     ctx.fillStyle='rgba(205,215,240,'+a+')';ctx.fillRect(x-w/2+Math.sin(t*.4+i)*r*.4,yy,w,Math.max(1,r*.09));}
   ctx.restore();
@@ -799,7 +811,7 @@ function drawShore(t){
   if(built('rain')){const x=W*.62;ctx.fillStyle='#2a3142';ctx.fillRect(x-1,shoreTop+10,2,26);ctx.fillStyle=rainNight()?'rgba(190,210,240,.8)':'rgba(190,210,240,.35)';ctx.fillRect(x+1,shoreTop+12,7,12);}
   if(built('pods')){ctx.fillStyle='rgba(40,70,52,.95)';for(let i=0;i<3;i++){ctx.beginPath();ctx.ellipse(W*.36+i*12,shoreTop+30,5,3.5,0,0,TAU);ctx.fill();}}
 }
-const wavelets=[];for(let i=0;i<34;i++)wavelets.push({x:Math.random(),y:.04+Math.random()*.78,len:10+Math.random()*30,ph:Math.random()*6.3,sp:.4+Math.random()*.8});
+const wavelets=[];for(let i=0;i<22;i++)wavelets.push({x:Math.random(),y:.04+Math.random()*.78,len:10+Math.random()*30,ph:Math.random()*6.3,sp:.4+Math.random()*.8});
 let frame=0;
 function draw(){
   const t=simT;
@@ -1030,9 +1042,9 @@ function openPanel(kind){
     $('mTour').addEventListener('click',()=>{closePanel();tutStart();});
     $('mReset').addEventListener('click',()=>{const b=$('mReset');if(b.dataset.arm){resetting=true;try{localStorage.removeItem(KEY);localStorage.clear();}catch(e){}b.textContent='Starting over\u2026';setTimeout(()=>location.reload(),150);}else{b.dataset.arm='1';b.textContent='Tap again to really reset';}});
   }
-  $('panel').hidden=false;$('panel').scrollTop=0;
+  $('panel').hidden=false;$('panelClose').hidden=false;$('panel').scrollTop=0;
 }
-function closePanel(){$('panel').hidden=true;}
+function closePanel(){$('panel').hidden=true;$('panelClose').hidden=true;}
 $('bClose').addEventListener('click',closePanel);
 $('bShore').addEventListener('click',()=>openPanel('shore'));
 $('bTonight').addEventListener('click',()=>openPanel('tonight'));
@@ -1045,7 +1057,7 @@ addEventListener('pointerdown',function arm(){if(save.sound)setSound(true);remov
 if(built('reeds'))for(let i=0;i<14;i++)flies.push({x:rnd(.03,.2),y:rnd(.5,.85),ph:rnd(TAU),sp:rnd(.4,1),life:1});
 else for(let i=0;i<6;i++)flies.push({x:rnd(),y:rnd(.1,.8),ph:rnd(TAU),sp:rnd(.4,1),life:1});
 if(!save.tut)setTimeout(tutStart,1400);
-else{const grown=lotuses.filter(l=>lotusStage(l)>=1).length;setTimeout(()=>{if(!$('toast').classList.contains('show'))toast(firstVisitTonight?'Welcome back':'The pond is waiting',firstVisitTonight?'three new things to try tonight':'');},1200);}
+else{const grown=lotuses.filter(l=>lotusStage(l)>=1).length;setTimeout(()=>toast(firstVisitTonight?'Welcome back':'The pond is waiting',firstVisitTonight?'three new things to try tonight':''),1200);}
 requestWake();
 requestAnimationFrame(loop);
 window.__pond={save,lanterns,koi,pets,lotuses,ripples,gainGlow,wish,startRise,releaseLantern,dbg,openPanel,get simT(){return simT;},moon,makeWishes,persist,step:(s)=>{for(let i=0;i<s*30;i++){simT+=1/30;update(1/30);}}};

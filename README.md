@@ -7,6 +7,7 @@ A quiet bedtime game for a dark room. Open `index.html` in any browser (phone or
 - After a couple of minutes afloat, a lantern leaves a **lotus** behind. Lotuses keep growing in real time, even while the page is closed.
 - **Koi** are drawn to lantern light. Keep a lantern over one long enough and it surfaces to show its colours, and is added to your **journal**. Some only appear after 11pm.
 - **Drag** slowly to stir the water.
+- **Sound** is on by default and starts on your first touch: a warm pad that swells on slow tides between four chords, a dark reverb, and distant rain that gusts. Taps play tones from the current chord.
 - **Dim** cycles screen brightness. **Candle** fades everything to black over ten minutes so you can drift off.
 
 Everything is saved in your browser's local storage. No accounts, no network, no ads.

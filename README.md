@@ -17,3 +17,11 @@ Everything is saved in your browser's local storage. No accounts, no network, no
 ## Play it on a phone
 
 Host the single `index.html` anywhere (GitHub Pages works: Settings → Pages → deploy from the `main` branch root), open it in Chrome on Android, then "Add to Home screen" for a full-screen app.
+
+## Android app (APK)
+
+`android/LanternPond.apk` is a ready-to-install Android app: the same game in a full-screen WebView with the system bars hidden and the screen kept awake. Minimum Android 7.
+
+Install it by opening the APK on your phone (download it from GitHub or copy it over) and allowing installs from that source when Android asks. Your lanterns, lotuses and koi live in the app's own storage, separate from the browser version.
+
+To rebuild after changing `index.html`, run `android/build.sh`. It expects `aapt2`, `dx.jar`, an Android framework jar, a framework resource jar and `uber-apk-signer.jar` in `android/tools/` (or point the env vars in the script at an Android SDK). The signing key in `android/lanternpond.jks` is what lets a new build update the installed app in place; keep using it.

@@ -1,4 +1,6 @@
-# Handoff: the chill bedtime game
+# Handoff: the chill bedtime games
+
+**Current state (October 2026):** the concept round described below is done. The player picked **Night Stream**, a turn-the-stones puzzle with creatures that follow you for the night. `DESIGN.md` is the one-page design they approved. It is built as `index.html` and ships as `android/NightStream.apk` (package `com.chillbedtime.nightstream`, a separate app from Lantern Pond). Lantern Pond moved to `lantern-pond/index.html` and still builds. The rest of this file is the original handoff, kept for the requirements and history. Read "Night Stream: what was built" at the end for the new game.
 
 This file is for a new Claude Code session picking up this project. Read all of it before doing anything. The next job is **not** to code. It is to work through game concepts with the player until one feels right, then build that.
 
@@ -70,9 +72,9 @@ Things that *did* land and are worth keeping in any new concept: the lantern hol
 
 ## Repo layout
 
-- `index.html`: the whole game. Sections are marked `// ---------- name ----------`: helpers, persistence, koi species, audio, canvas, world, tutorial, update, draw, loop, input, settings, panels, boot. A `window.__pond` debug object exposes save, lanterns, koi, pets, lotuses, `gainGlow`, `wish`, `startRise`, `releaseLantern`, `openPanel`, `dbg` (moon and rain overrides), `makeWishes`, `persist`, and `step(seconds)` to fast-forward the simulation in tests.
+- (Before Night Stream) `index.html`: the whole game, now at `lantern-pond/index.html`. Sections are marked `// ---------- name ----------`: helpers, persistence, koi species, audio, canvas, world, tutorial, update, draw, loop, input, settings, panels, boot. A `window.__pond` debug object exposes save, lanterns, koi, pets, lotuses, `gainGlow`, `wish`, `startRise`, `releaseLantern`, `openPanel`, `dbg` (moon and rain overrides), `makeWishes`, `persist`, and `step(seconds)` to fast-forward the simulation in tests.
 - `README.md`: player-facing description.
-- `android/`: the Android wrapper. `AndroidManifest.xml` (package `com.chillbedtime.lanternpond`, versionCode 7, versionName 2.4, min SDK 24, target 34), `src/com/chillbedtime/lanternpond/MainActivity.java` (full-screen WebView loading `file:///android_asset/index.html`, immersive bars hidden, screen kept on, haptics and long-click disabled, DOM storage on, media without gesture), `res/` (icon and app name), `build.sh`, `lanternpond.jks` (signing key, store and key password both `lanternpond`, alias `lanternpond`), `LanternPond.apk` (committed, installable).
+- `android/`: the Android wrapper, now shared by both apps. Each app has its own folder with `AndroidManifest.xml` and `res/`: `android/lanternpond/` (package `com.chillbedtime.lanternpond`, versionCode 7, versionName 2.4) and `android/nightstream/` (package `com.chillbedtime.nightstream`, versionCode 1, versionName 1.0); both min SDK 24, target 34. Shared: `src/com/chillbedtime/lanternpond/MainActivity.java` (full-screen WebView loading `file:///android_asset/index.html`, immersive bars hidden, screen kept on, haptics and long-click disabled, DOM storage on, media without gesture), `res/` (icon and app name), `build.sh`, `lanternpond.jks` (signing key, store and key password both `lanternpond`, alias `lanternpond`), `LanternPond.apk` (committed, installable).
 - `.gitignore` ignores `android/build/`.
 - Branch: `claude/bedtime-game-design-h4uzjp` on `zeroeyes1/chillbedtime`. It is the repo's default branch. The repo is public.
 
@@ -88,7 +90,7 @@ Google's SDK host (dl.google.com) is blocked from the cloud sandbox, so the tool
 | `android-all.jar` | https://maven-central.storage-download.googleapis.com/maven2/org/robolectric/android-all/14-robolectric-10818077/android-all-14-robolectric-10818077.jar (about 138 MB) |
 | `uber-apk-signer.jar` | https://github.com/patrickfav/uber-apk-signer/releases/download/v1.3.0/uber-apk-signer-1.3.0.jar |
 
-Notes: `repo.maven.apache.org` rate-limits the sandbox IP (HTTP 429), so use the `maven-central.storage-download.googleapis.com` mirror. `dx.jar` has no main manifest; the script runs `java -cp dx.jar com.android.dx.command.Main --dex`. Java 21 and `zip` are present in the sandbox. The script copies `../index.html` into assets, compiles resources, links with the framework resource jar, compiles `MainActivity.java` against `android-all.jar` with `--release 8`, dexes, zips `classes.dex` in, and signs with uber-apk-signer using the committed key. Bump `versionCode` and `versionName` in the manifest before each build so Android installs over the old one. Then `git add android/LanternPond.apk` and push; the raw GitHub link above always serves the latest.
+Notes: `repo.maven.apache.org` rate-limits the sandbox IP (HTTP 429), so use the `maven-central.storage-download.googleapis.com` mirror. `dx.jar` has no main manifest; the script runs `java -cp dx.jar com.android.dx.command.Main --dex`. Java 21 and `zip` are present in the sandbox. The script copies `../index.html` into assets, compiles resources, links with the framework resource jar, compiles `MainActivity.java` against `android-all.jar` with `--release 8`, dexes, zips `classes.dex` in, and signs with uber-apk-signer using the committed key. Bump `versionCode` and `versionName` in the manifest before each build so Android installs over the old one. Then `git add` the APK and push; the raw GitHub link always serves the latest. `build.sh` now takes the app name: `android/build.sh nightstream` (the default, from `index.html`, writes `NightStream.apk`) or `android/build.sh lanternpond` (from `lantern-pond/index.html`, writes `LanternPond.apk`). Both apps share `MainActivity` (Night Stream's manifest names it by its full class name) and the signing key. `android/tools/` is git-ignored.
 
 The web version is a Claude artifact. To republish it, strip the document skeleton lines (`<!doctype html>`, `<html>`, `<head>`, `</head>`, `<body>`, `</body>`, `</html>`, and `<meta ...>` lines) from `index.html` into a file and publish that file to the existing URL. Playwright with the pre-installed Chromium at `/opt/pw-browsers/chromium` works for testing; import it from the global npm root.
 
@@ -101,3 +103,20 @@ The web version is a Claude artifact. To republish it, strip the document skelet
 - A fixed-position button inside a `backdrop-filter` panel scrolls with the panel (keep fixed bars outside blurred containers).
 - Custom `display` on an element defeats the `hidden` attribute unless `[hidden]{display:none!important}` is in the page.
 - Koi colours popping in instead of fading; multiple koi surfacing at once; toasts stacking.
+
+## Night Stream: what was built
+
+The concept round went: five concepts (Night Fishing, Lily Pond tiles, Turning Stones, Lotus Colours, One Lantern), then feel questions. Answers: the best moment is "click: it fits"; light puzzles you can do half-asleep; the pull to come back is "what will show up?"; soft misses where lingering too long lets something slip away (but patience "barely there"); a click every few seconds; a clear board; easy ponds with a chewier one every few; mostly real pond life with a few magical creatures; creatures tag along for the night; reach every pool; outlines and a clue for unmet creatures; a short breath between ponds; keep the fork; a separate app called Night Stream.
+
+How `index.html` is laid out (sections marked `// ---------- name ----------`):
+
+- **creatures**: `CR`, 36 entries. `k` is the kinds of water (r reeds, l lilies, s shallows, d deep), `w` weight, `sh` drawing shape, `mv` movement, and conditions `late`/`early` (half past ten), `vlate` (after midnight), `rain` (seeded, 3 nights in 10), `full`/`newm` (real moon phase), `after` (only when that creature already follows you tonight), `metN`. `pickCreature` weights unmet ones a little higher and forces a new one if a night has gone two ponds without one.
+- **creature drawing**: one function per shape, drawn from above facing right, with a paint function that gives real colours, a dark shadow (waiting in a pool) or a soft outline (journal, not met yet).
+- **the board**: sides are bits N1 E2 S4 W8. `genPond` builds a random spanning tree (Prim for easy, DFS for chewy), takes the paths from the spring (always on the top edge) to each pool, fills the other cells with spare stones or empty water, adds mossy (fixed) and twin (turn together) stones by night count, scrambles, and makes sure it is not already solved. `flow()` does the water. `PLAN` is tonight's ten (size, pools, spare stones, type), `FREE` is for after.
+- **the night**: `onSolved` (counts the pond, meets creatures, they follow you), `showFork`, `startRest` (the quiet pool after ten, lights a far-bank lantern).
+- Save key `night-stream-v1`. `save.tonight` holds the night's progress, followers and the current pond, so a reload resumes mid-pond.
+- `window.__ns` debug object: `save`, `pond`, `phase`, `comps`, `dbg` (set `hour`, `rain`, `phase` to test conditions), `geo`, `cellCenter(i)`, `flow()`, `step(seconds)`.
+
+Testing: Playwright scripts at 412 by 915 with touch played the tutorial and a whole first night (10 ponds, quiet pool, free play, reload mid-pond), and a later night seeded as night six (mossy and twin stones, late, rainy and full-moon creatures, followers chaining, the idle drift). No console errors. The scripted solver taps each stream stone into line; when twin stones pair a straight with a bend, count the turns from the bend.
+
+Not yet tried on a real phone: how the sound sits with the new knock and fill notes, and whether the puzzle difficulty feels right to a person rather than a script.

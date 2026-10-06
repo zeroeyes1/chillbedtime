@@ -108,6 +108,8 @@ The web version is a Claude artifact. To republish it, strip the document skelet
 
 The concept round went: five concepts (Night Fishing, Lily Pond tiles, Turning Stones, Lotus Colours, One Lantern), then feel questions. Answers: the best moment is "click: it fits"; light puzzles you can do half-asleep; the pull to come back is "what will show up?"; soft misses where lingering too long lets something slip away (but patience "barely there"); a click every few seconds; a clear board; easy ponds with a chewier one every few; mostly real pond life with a few magical creatures; creatures tag along for the night; reach every pool; outlines and a clue for unmet creatures; a short breath between ponds; keep the fork; a separate app called Night Stream.
 
+Live versions: the private web link https://claude.ai/artifact/Rw8Gv9qrSgkNuG35bgsP94 (republish the same way as Lantern Pond: strip the skeleton lines and publish to that URL) and the APK at `android/NightStream.apk` (direct link while it is on this branch: https://github.com/zeroeyes1/chillbedtime/raw/ccr-c1349adb-v48kj8/android/NightStream.apk ).
+
 How `index.html` is laid out (sections marked `// ---------- name ----------`):
 
 - **creatures**: `CR`, 36 entries. `k` is the kinds of water (r reeds, l lilies, s shallows, d deep), `w` weight, `sh` drawing shape, `mv` movement, and conditions `late`/`early` (half past ten), `vlate` (after midnight), `rain` (seeded, 3 nights in 10), `full`/`newm` (real moon phase), `after` (only when that creature already follows you tonight), `metN`. `pickCreature` weights unmet ones a little higher and forces a new one if a night has gone two ponds without one.
